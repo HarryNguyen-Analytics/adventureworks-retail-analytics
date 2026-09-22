@@ -1,0 +1,22 @@
+# Local data extracts and database files
+data/raw/
+data/private/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.db
+*.sqlite
+
+# Power BI temporary and autosave files
+*.pbit.tmp
+*.pbix.tmp
+*.pbix.autosave
+~$*
+*.lock
+
+# Editor and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
