@@ -1,32 +1,80 @@
--- 01 | Data validation
--- SQL dialect and physical table names: TODO after source selection.
--- Expected grain: one sales order line. Do not run as-is.
+/*
+============================================================
+Project: AdventureWorks Retail Analytics
+File: 01_data_validation.sql
 
--- 1. Coverage and volume
--- TODO: map <sales_order_lines>, <order_date>, <order_id>, <customer_id>, <product_id>.
--- SELECT MIN(<order_date>) AS first_order_date,
---        MAX(<order_date>) AS last_order_date,
---        COUNT(*) AS line_rows,
---        COUNT(DISTINCT <order_id>) AS orders,
---        COUNT(DISTINCT <customer_id>) AS customers,
---        COUNT(DISTINCT <product_id>) AS products
--- FROM <sales_order_lines>;
+Purpose:
+Validate dataset scope, order-line grain, completeness,
+key integrity and numerical validity before business analysis.
 
--- 2. Key integrity
--- TODO: group by the confirmed order-line key; investigate any count > 1.
--- SELECT <order_id>, <line_id>, COUNT(*) AS rows_per_key
--- FROM <sales_order_lines>
--- GROUP BY <order_id>, <line_id>
--- HAVING COUNT(*) > 1;
+SQL dialect: GoogleSQL
+Platform: Google BigQuery
+============================================================
+*/
+
+-- =========================================================
+-- TEST 1: DATASET OVERVIEW
+-- Confirm dataset size, date coverage, orders and customers.
+-- =========================================================
+select
+    min(s.OrderDate) as first_order_date,
+    max(s.OrderDate) as last_order_date,
+    count(*) as total_rows,
+    count(distinct s.OrderNumber) as total_order,
+    count(distinct s.CustomerKey) as total_customer
+from `adventureworks.sales_data` s;
+/*
+Result:
+
+- [add validated result]
+- Date coverage: [2020-01-01] to [2022-06-30]
+- [56046] total sales rows
+- [25164] distinct orders
+- [17416] active customers
+*/
+
+-- =========================================================
+-- TEST 2: EXPECTED ROW GRAIN
+-- Expected grain:
+-- one record per order number and order line item.
+-- =========================================================
+select
+    s.OrderNumber,
+    s.OrderLineItem,
+    count(*) as rows_per_order_line
+from `adventureworks.sales_data` s
+group by s.OrderNumber, s.OrderLineItem
+having count(*) > 1;
+/*
+Result:
+[There is no data to display.]
+Confirmed grain:
+One record per OrderNumber and OrderLineItem.
+*/
 
 -- 3. Completeness and value checks
--- TODO: count null keys/dates, zero or negative quantities and sales amounts.
--- TODO: check orphan product/customer keys after confirming dimension cardinality.
+select 
+  sum(case when s.OrderDate is null then 1 else 0 end) as null_order_date,
+  sum(case when s.OrderNumber is null then 1 else 0 end) as null_order_number,
+  sum(case when s.ProductKey is null then 1 else 0 end) as null_product_key,
+  sum(case when s.CustomerKey is null then 1 else 0 end) as null_customer_key,
+  sum(case when s.TerritoryKey is null then 1 else 0 end) as null_territory_key,
+  sum(case when s.OrderLineItem is null then 1 else 0 end) as null_order_line_item,
+  sum(case when s.OrderQuantity is null then 1 else 0 end) as null_order_quantity,
+  sum(case when s.OrderQuantity <= 0 then 1 else 0 end) as invalid_order_quantity
+from `adventureworks.sales_data` s
+/*
+Result:
+[All 0 results]
+*/
 
--- 4. Month coverage
--- TODO: count orders and lines by year and month.
--- Confirm that 2022 contains January–June only before using a YoY measure.
+-- =========================================================
+-- TEST 4: INVALID NUMERICAL VALUES
+-- =========================================================
+select
+    sum(case when s.OrderQuantity <= 0 then 1 else 0 end) as invalid_order_quantity
+from `adventureworks.sales_data` s;
+/*
+Result: 0
+*/
 
--- 5. Reconciliation
--- TODO: compare line-level sales amount with order totals, including documented
--- discount, return, tax and freight treatment.
