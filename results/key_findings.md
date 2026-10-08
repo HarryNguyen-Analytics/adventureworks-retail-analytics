@@ -1,18 +1,27 @@
-# Key findings
+# Key Findings
 
-Findings will be published after source validation and reconciliation between SQL and Power BI. No figures or business conclusions are claimed yet.
+## 1. Revenue growth
 
-## Evidence checklist
+- Revenue increased by **45.60% in 2021 compared with 2020**.
+- 2022 contains **January–June data only**, so 2022 YoY performance should be compared with **January–June 2021**, not the full 2021 year.
 
-- Confirm the source edition, data grain, date coverage and revenue treatment.
-- Reconcile revenue, orders and active customers across SQL and Power BI.
-- Compare 2022 only on the January–June window when reporting YoY.
-- Calculate Repeat Customer Rate as active customers with more than one order in the selected period divided by all active customers in that period.
-- Record the query/measure, selected period and supporting visual beside each published finding.
+## 2. Revenue is heavily concentrated in Bikes
 
-## Planned summary
+- Bikes generated approximately **$23.64M**, representing **94.89% of total revenue**.
+- However, Bikes accounted for only **16.55% of units sold**.
+- Accessories represented **68.68% of units sold** but only **3.64% of revenue**.
 
-- Sales performance and comparable-period movement
-- Product mix and revenue concentration
-- Customer order frequency and revenue distribution
-- Limitations and business implications supported by the validated results
+This shows a clear difference between sales volume and revenue contribution: Accessories drive unit volume, while Bikes account for most sales value.
+
+## 3. Customer value differs by occupation
+
+- Professional customers generated the highest revenue at approximately **$8.47M** and the highest average revenue per customer at **$1,622.18**.
+- Management customers recorded the second-highest average revenue per customer at **$1,589.87**, despite having a smaller customer base.
+- Manual customers recorded the lowest average revenue per customer at **$1,083.11**.
+
+## 4. Data limitation
+
+- Sales data covers **2020, 2021 and January–June 2022**.
+- Order counts use distinct `OrderNumber` because a single order can contain multiple sales lines.
+- Revenue is calculated as `ProductPrice × OrderQuantity`.
+- Repeat Customer Rate is defined as the share of active customers placing more than one order within the selected period. It is not a retention rate.
