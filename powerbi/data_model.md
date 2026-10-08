@@ -1,22 +1,67 @@
-# Power BI data model
+# Power BI Data Model
 
-## Intended model
+The Power BI model uses a star-schema-style structure with sales and returns data connected to shared dimension tables.
 
-A star schema built from the validated sales order-line fact, with Date, Product and Customer dimensions. Order ID remains available for distinct-order measures. Add an Order dimension only if order-level attributes or relationship needs justify it.
+## Model Structure
 
-| Table | Grain | Relationship |
-| --- | --- | --- |
-| Sales fact | One confirmed order line | Many-to-one to Date, Product and Customer |
-| Date | One calendar date | Active relationship to order date |
-| Product | One product key | Unique product key |
-| Customer | One customer key | Unique customer key |
+### Fact Tables
 
-Confirm keys, cardinality, inactive dates, blank members and filter direction in the actual model. Prefer single-direction dimension-to-fact filtering. Keep all time comparisons on the Date table.
+**Sales Data**
+- OrderDate
+- StockDate
+- OrderNumber
+- ProductKey
+- CustomerKey
+- TerritoryKey
+- OrderLineItem
+- OrderQuantity
 
-## Planned report pages
+**Returns Data**
+- ReturnDate
+- TerritoryKey
+- ProductKey
+- ReturnQuantity
 
-1. **Executive overview:** revenue, orders, AOV, active customers and comparable sales trend.
-2. **Product analysis:** category mix, product ranking and contribution.
-3. **Customer analysis:** active customers, order frequency and Repeat Customer Rate.
+### Dimension Tables
 
-Use clear period labels. A 2022 YoY view must compare January–June with January–June. Add model and report screenshots to `images/` only after the PBIX is built and checked.
+**Product Lookup**
+- Product information, price and cost
+- Linked to Product Subcategories
+
+**Product Subcategories Lookup**
+- Product subcategory information
+- Linked to Product Categories
+
+**Product Categories Lookup**
+- Product category information
+
+**Customer Lookup**
+- Customer demographic and profile attributes
+
+**Territory Lookup**
+- Region, country and continent
+
+**Calendar Lookup**
+- Shared date dimension used for time-based analysis
+
+## Key Relationships
+
+| From | To | Relationship |
+|---|---|---|
+| Sales Data | Product Lookup | ProductKey |
+| Sales Data | Customer Lookup | CustomerKey |
+| Sales Data | Territory Lookup | TerritoryKey |
+| Sales Data | Calendar Lookup | OrderDate |
+| Product Lookup | Product Subcategories Lookup | ProductSubcategoryKey |
+| Product Subcategories Lookup | Product Categories Lookup | ProductCategoryKey |
+| Returns Data | Product Lookup | ProductKey |
+| Returns Data | Territory Lookup | TerritoryKey |
+| Returns Data | Calendar Lookup | ReturnDate |
+
+## Modelling Approach
+
+The model separates transactional data from descriptive dimensions so that sales, product and customer measures can be analysed consistently across dashboard pages.
+
+The Calendar table provides the common time dimension for monthly and year-over-year analysis.
+
+2022 contains January–June data only. YoY measures involving 2022 therefore use comparable January–June periods rather than comparing against the full 2021 year.
