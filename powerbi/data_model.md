@@ -65,3 +65,7 @@ The model separates transactional data from descriptive dimensions so that sales
 The Calendar table provides the common time dimension for monthly and year-over-year analysis.
 
 2022 contains January–June data only. YoY measures involving 2022 therefore use comparable January–June periods rather than comparing against the full 2021 year.
+
+## Model View
+
+![Power BI Data Model](../images/data_model.png)
