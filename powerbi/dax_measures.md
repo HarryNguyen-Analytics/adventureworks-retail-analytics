@@ -2,7 +2,6 @@
 
 Key measures used across the AdventureWorks Power BI dashboard.
 
-## Revenue
 
 ```DAX
 Total Revenue =
