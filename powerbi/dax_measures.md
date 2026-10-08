@@ -61,4 +61,14 @@ DIVIDE(
     [Repeat Customers],
     [Active Customers]
 )
+```
 
+## Interpretation
+
+Revenue and cost sum product lookup price and cost multiplied by order quantity. Profit is revenue less product cost; returns and operating expenses are not deducted. AOV divides revenue by distinct OrderNumber.
+
+Repeat Customer Rate is the share of active customers with more than one distinct order in the selected period and filter context. It measures repeat purchasing within that window, not customer retention across periods.
+
+Sales data covers 2020, 2021 and January–June 2022. Any 2022 YoY comparison must use January–June 2022 against January–June 2021. The measures listed above do not define a YoY calculation.
+
+See the [README](../README.md#metric-definitions) for metric definitions and data limitations.

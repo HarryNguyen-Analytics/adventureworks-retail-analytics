@@ -50,13 +50,13 @@ The Power BI model uses a star-schema-style structure with sales and returns dat
 |---|---|---|
 | Sales Data | Product Lookup | ProductKey |
 | Sales Data | Customer Lookup | CustomerKey |
-| Sales Data | Territory Lookup | TerritoryKey |
-| Sales Data | Calendar Lookup | OrderDate |
+| Sales Data | Territory Lookup | TerritoryKey → SalesTerritoryKey |
+| Sales Data | Calendar Lookup | OrderDate → Date |
 | Product Lookup | Product Subcategories Lookup | ProductSubcategoryKey |
 | Product Subcategories Lookup | Product Categories Lookup | ProductCategoryKey |
 | Returns Data | Product Lookup | ProductKey |
-| Returns Data | Territory Lookup | TerritoryKey |
-| Returns Data | Calendar Lookup | ReturnDate |
+| Returns Data | Territory Lookup | TerritoryKey → SalesTerritoryKey |
+| Returns Data | Calendar Lookup | ReturnDate → Date |
 
 ## Modelling Approach
 
@@ -64,7 +64,9 @@ The model separates transactional data from descriptive dimensions so that sales
 
 The Calendar table provides the common time dimension for monthly and year-over-year analysis.
 
-2022 contains January–June data only. YoY measures involving 2022 therefore use comparable January–June periods rather than comparing against the full 2021 year.
+Sales data covers 2020, 2021 and January–June 2022. Any 2022 YoY comparison must use January–June 2022 against January–June 2021. Full-year 2021 totals are not a comparable baseline.
+
+Revenue and cost sum `ProductPrice × OrderQuantity` and `ProductCost × OrderQuantity` across sales lines. Profit is revenue less product cost. Returns are analysed separately and do not reduce these sales measures. See [metric definitions and limitations](../README.md#metric-definitions) and the [DAX measures](dax_measures.md).
 
 ## Model View
 
