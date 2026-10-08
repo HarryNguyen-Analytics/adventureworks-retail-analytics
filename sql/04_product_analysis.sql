@@ -18,20 +18,26 @@ Platform: Google BigQuery
 -- =========================================================
 with category_summary as (
 select 
-  p.ProductName as category,
+  pc.CategoryName as category,
   sum(s.OrderQuantity) as total_unit_sold,
   round(sum(s.OrderQuantity*p.ProductPrice),2) as total_revenue,
   round(sum(s.OrderQuantity*(p.ProductPrice - p.ProductCost)),2) as total_profit
 from `adventureworks.sales_data` s
-join `adventureworks.product_lookup` p on p.ProductKey = s.ProductKey
-join `adventureworks.product_subcategories_lookup` ps on ps.ProductSubcategoryKey = p.ProductSubcategoryKey
-join `adventureworks.product_categories_lookup` pc on pc.ProductCategoryKey = ps.ProductCategoryKey
+join `adventureworks.product_lookup` p 
+  on p.ProductKey = s.ProductKey
+join `adventureworks.product_subcategories_lookup` ps 
+  on ps.ProductSubcategoryKey = p.ProductSubcategoryKey
+join `adventureworks.product_categories_lookup` pc 
+  on pc.ProductCategoryKey = ps.ProductCategoryKey
 group by category)
 
-
-select cm.category, cm.category, cm.total_revenue, cm.total_profit,
-round(cm.total_profit/cm.total_revenue*100,2) as profit_margin_pct,
-round(cm.total_revenue/sum(total_revenue) over()*100,2) as revenue_cont_pct
+select 
+  cm.category,
+  cm.total_unit_sold,
+  cm.total_revenue,
+  cm.total_profit,
+  round(cm.total_profit/cm.total_revenue*100,2) as profit_margin_pct,
+  round(cm.total_revenue/sum(cm.total_revenue) over()*100,2) as revenue_cont_pct
 from category_summary cm
 order by cm.total_revenue desc;
 
@@ -90,8 +96,8 @@ limit 10;
 -- =========================================================
 with product_profit_summary as (
 select
-  p.ProductKey as product_name,
-  p.ProductName as product_key,
+  p.ProductKey as product_key,
+  p.ProductName as product_name,
   sum(s.OrderQuantity) as total_unit_sold,
   round(sum(s.OrderQuantity * p.ProductPrice),2) as total_revenue,
   round(sum(s.OrderQuantity * (p.ProductPrice - p.ProductCost)),2) as total_profit
@@ -107,4 +113,20 @@ select
   round( pps.total_profit/pps.total_revenue*100,2 ) as profit_margin_pct
 from product_profit_summary pps
 order by pps.total_profit desc;
+
+-- =========================================================
+-- 5. PRODUCTS WITH HIGHEST RETURN VOLUME
+-- Identify products with the highest number of returned units.
+-- =========================================================
+
+select
+  p.ProductKey,
+  p.ProductName,
+  sum(r.ReturnQuantity) as total_unit_returned
+from `adventureworks.returns_data` r
+join `adventureworks.product_lookup` p
+  on r.ProductKey = p.ProductKey
+group by p.ProductKey, p.ProductName
+order by total_unit_returned desc
+limit 10;
 
